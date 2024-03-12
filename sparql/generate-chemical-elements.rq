@@ -1,0 +1,76 @@
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX morph: <https://www.w3.org/community/ontolex/wiki/Morphology#>
+PREFIX lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#>
+PREFIX vartrans: <http://www.w3.org/ns/lemon/vartrans#>
+PREFIX decomp: <http://www.w3.org/ns/lemon/decomp#>
+
+CONSTRUCT {
+	?new_entry a ontolex:LexicalEntry ;
+	           ontolex:canonicalForm ?new_form ;
+	           decomp:subTerm ?prefix, ?source_entry .
+	?new_form a ontolex:Form ;
+	          ontolex:writtenRep ?new_string , ?new_formula .
+}
+WHERE {
+	{
+		{
+			?source_entry ontolex:canonicalForm/ontolex:writtenRep ?base_string . 
+			FILTER(LANG(?base_string) != "en-x-chem")
+		}
+		{
+			?source_entry ontolex:canonicalForm/ontolex:writtenRep ?base_formula . 
+			FILTER(LANG(?base_formula) = "en-x-chem")
+		}
+		?wfRel a morph:WordFormationRelation ;
+	    	   vartrans:source ?source_entry ;
+	    	   vartrans:target ?new_entry ;
+	    	   morph:WordFormationRule ?rule .
+
+		?rule a morph:DerivationRule ;
+	          morph:replacement/morph:source ?srcPattern ;
+	          morph:replacement/morph:target ?dstPattern ;
+	          morph:involves ?affix .
+
+	    ?affix ontolex:lexicalForm/ontolex:writtenRep ?affix_string .
+	    FILTER(LANG(?affix_string) = "en-x-chem")
+	    BIND(0 AS ?is_compound)
+	    
+	    BIND(REPLACE(?base_string, ?srcPattern, ?dstPattern) AS ?new_string)
+		BIND(CONCAT(?base_formula, ?affix_string) AS ?new_formula)
+	}
+	UNION
+	{
+		{
+			?source_entry ontolex:canonicalForm/ontolex:writtenRep ?base_string . 
+			FILTER(LANG(?base_string) != "en-x-chem")
+		}
+		{
+			?source_entry ontolex:canonicalForm/ontolex:writtenRep ?base_formula . 
+			FILTER(LANG(?base_formula) = "en-x-chem")
+		}
+
+		?wfRel a morph:CompoundingRelation ;
+	    	   vartrans:source ?source_entry ;
+	    	   vartrans:target ?compound_entry .
+	    ?source_entry ontolex:canonicalForm/ontolex:writtenRep ?base_string . 
+		
+	    {
+			?compound_entry ontolex:canonicalForm/ontolex:writtenRep ?compound_string . 
+			FILTER(LANG(?compound_string) != "en-x-chem")
+		}
+		{
+			?compound_entry ontolex:canonicalForm/ontolex:writtenRep ?compound_formula . 
+			FILTER(LANG(?compound_formula) = "en-x-chem")
+		}
+
+
+		BIND(1 AS ?is_compound)
+	    BIND(URI(CONCAT(STR(?source_entry), "_", REPLACE(STR(?compound_entry), ".*/", ""))) as ?new_entry)
+	    BIND(CONCAT(?base_string, " ", ?compound_string) AS ?new_string)
+	    BIND(CONCAT(?base_formula, ?compound_formula) AS ?new_formula)
+
+
+	}
+
+    BIND(URI(CONCAT(STR(?new_entry), "_form")) AS ?new_form)
+}

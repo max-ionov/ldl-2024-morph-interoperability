@@ -1,0 +1,92 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ontolex: <http://www.w3.org/ns/lemon/ontolex#> .
+@prefix lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#> .
+@prefix morph: <https://www.w3.org/community/ontolex/wiki/Morphology#> .
+@prefix vartrans: <http://www.w3.org/ns/lemon/vartrans#> .
+
+@prefix : <https://apps.ionov.me/ontolex/chem/> .
+
+# elements
+
+:chlorine a ontolex:LexicalEntry ;
+          ontolex:canonicalForm :chlorine_form .
+
+:chlorine_form a ontolex:Form ;
+               ontolex:writtenRep "chlorine"@en-GB ,
+                                  "Cl"@en-x-Chem .
+
+:sodium a ontolex:LexicalEntry ;
+          ontolex:canonicalForm :sodium_form .
+
+:sodium_form a ontolex:Form ;
+               ontolex:writtenRep "sodium"@en-GB ,
+                                  "Na"@en-x-Chem .
+
+:iron a ontolex:LexicalEntry ;
+          ontolex:canonicalForm :iron_form .
+
+:iron_form a ontolex:Form ;
+               ontolex:writtenRep "iron"@en-GB ,
+                                  "Fe"@en-x-Chem .
+
+# suffixes
+
+:ide a lexinfo:Suffix , ontolex:Affix ;
+     ontolex:lexicalForm :ide_form .
+
+:ide_form a ontolex:Form ;
+          ontolex:writtenRep "ide"@en-GB,
+                             ""@en-x-chem .
+
+:di a lexinfo:Prefix , ontolex:Affix ;
+    ontolex:lexicalForm :di_form .
+
+:di_form a ontolex:Form ;
+           ontolex:writtenRep "di-"@en-GB,
+                              "_2"@en-x-chem .
+
+# derivation rules
+
+:ine_ide_rule a morph:DerivationRule ;
+              morph:replacement [
+                morph:source "ine$" ;
+                morph:target "ide" ;
+              ] ;
+              morph:involves :ide .
+
+:di_rule a morph:DerivationRule ;
+         morph:replacement [
+           morph:source "^" ;
+           morph:target "di" ;
+         ] ;
+         morph:involves :di .
+
+:compound_rule a morph:CompoundingRule ;
+               morph:replacement [
+                 morph:source "$" ;
+                 morph:target " " ;
+               ] .
+
+# word formation relations
+
+:rel_chlorine_ide a morph:WordFormationRelation ;
+              vartrans:source :chlorine ;
+              vartrans:target :chloride ;
+              morph:WordFormationRule :ine_ide_rule .
+
+:rel_di_chloride a morph:WordFormationRelation ;
+              vartrans:source :chloride ;
+              vartrans:target :dichloride ;
+              morph:WordFormationRule :di_rule .
+
+:rel_sodium_chloride a morph:CompoundingRelation ;
+              vartrans:source :sodium ;
+              vartrans:target :chloride ;
+              morph:WordFormationRule :compound_rule .
+
+:rel_iron_dichloride a morph:CompoundingRelation ;
+              vartrans:source :iron ;
+              vartrans:target :dichloride ;
+              morph:WordFormationRule :compound_rule .

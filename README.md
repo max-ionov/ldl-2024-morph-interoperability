@@ -429,3 +429,83 @@ sparql --data=https://raw.githubusercontent.com/max-ionov/maltese-morph/main/lex
 ```
 
 We omit the output of the last two queries, since it is too long.
+
+## Chemical compounds
+
+This is a small example that shows how we can use OntoLex-Morph for dealing with derivations of chemical compounds. Toy dataset [chemistry.ttl](chemistry.ttl) contains lexical entries _chlorine_, _iron_ and _sodium_ with its base element name and derivation rules for making entries like _chloride_ and _dichloride_ alongside their chemical formulas.
+
+Since there are two steps for getting from _chlorine_ to _dichloride_, and SPARQL does not deal well with recursion, in this example we execute the steps separately.
+
+#### Constructing RDF with generated _-ide_ elements:
+```bash
+sparql --data=chemistry.ttl --query=sparql/get-chemical-name.rq
+```
+
+```turtle
+PREFIX :         <https://apps.ionov.me/ontolex/chem/>
+PREFIX decomp:   <http://www.w3.org/ns/lemon/decomp#>
+PREFIX lexinfo:  <http://www.lexinfo.net/ontology/2.0/lexinfo#>
+PREFIX morph:    <https://www.w3.org/community/ontolex/wiki/Morphology#>
+PREFIX ontolex:  <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX owl:      <http://www.w3.org/2002/07/owl#>
+PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX vartrans: <http://www.w3.org/ns/lemon/vartrans#>
+
+:chloride_form  rdf:type    ontolex:Form;
+        ontolex:writtenRep  "Cl"@en-x-chem , "chloride"@en-GB .
+
+:chloride  rdf:type            ontolex:LexicalEntry;
+        decomp:subTerm         :chlorine;
+        ontolex:canonicalForm  :chloride_form .
+```
+
+#### Generating chemical formulas and compound names:
+```bash
+sparql --data=chemistry.ttl --query=sparql/generate-chemical-elements.rq > chloride.ttl
+sparql --data=chemistry.ttl --data=chloride.ttl --query=sparql/get-chemical-name.rq
+```
+
+```
+-----------------------------------------------------------------------------
+| base_string      | new_string         | base_formula   | new_formula      |
+=============================================================================
+| "chloride"@en-GB | "dichloride"@en-GB | "Cl"@en-x-chem | "Cl_2"@en-x-chem |
+-----------------------------------------------------------------------------
+```
+
+There might be more steps, e.g. for getting compounds like _sodium chloride_. For this, we just need to execute the same query one more time:
+```bash
+sparql --data=chemistry.ttl --query=sparql/generate-chemical-elements.rq > chloride.ttl
+sparql --data=chemistry.ttl --query=sparql/generate-chemical-elements.rq > more-compounds.ttl
+sparql --data=chemistry.ttl --data=chloride.ttl --data=more-compounds.ttl --query=sparql/get-chemical-name.rq
+```
+
+```
+-----------------------------------------------------------------------------
+| base_string      | new_string         | base_formula   | new_formula      |
+=============================================================================
+| "chlorine"@en-GB | "chloride"@en-GB   | "Cl"@en-x-chem | "Cl"@en-x-chem   |
+| "chloride"@en-GB | "dichloride"@en-GB | "Cl"@en-x-chem | "Cl_2"@en-x-chem |
+| "sodium"@en-GB   | "sodium chloride"  | "Na"@en-x-chem | "NaCl"@en-x-chem |
+-----------------------------------------------------------------------------
+```
+
+For getting the compound _iron dichloride_, we have to run it again — there are 3 steps to generate it: _chlorine_ → _chloride_ → _dichloride_ → _iron dichloride_:
+```bash
+sparql --data=chemistry.ttl --query=sparql/generate-chemical-elements.rq > chloride.ttl
+sparql --data=chemistry.ttl --query=sparql/generate-chemical-elements.rq > more-compounds.ttl
+sparql --data=chemistry.ttl --data=more-compounds.ttl --query=sparql/generate-chemical-elements.rq > even-more-compounds.ttl
+sparql --data=chemistry.ttl --data=more-compounds.ttl --data=even-more-compounds.ttl --query=sparql/get-chemical-name.rq
+```
+
+```
+-------------------------------------------------------------------------------
+| base_string      | new_string         | base_formula   | new_formula        |
+===============================================================================
+| "chlorine"@en-GB | "chloride"@en-GB   | "Cl"@en-x-chem | "Cl"@en-x-chem     |
+| "chloride"@en-GB | "dichloride"@en-GB | "Cl"@en-x-chem | "Cl_2"@en-x-chem   |
+| "iron"@en-GB     | "iron dichloride"  | "Fe"@en-x-chem | "FeCl_2"@en-x-chem |
+| "sodium"@en-GB   | "sodium chloride"  | "Na"@en-x-chem | "NaCl"@en-x-chem   |
+-------------------------------------------------------------------------------
+```

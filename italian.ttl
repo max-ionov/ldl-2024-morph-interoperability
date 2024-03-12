@@ -1,0 +1,123 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ontolex: <http://www.w3.org/ns/lemon/ontolex#> .
+@prefix lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#> .
+@prefix morph: <https://www.w3.org/community/ontolex/wiki/Morphology#> .
+
+@prefix : <https://apps.ionov.me/ontolex/ita/> .
+
+:suff_o_1sg a ontolex:Affix ;
+            rdfs:label "-o"@ita ;
+            morph:grammaticalMeaning [
+              lexinfo:number lexinfo:singular ;
+              lexinfo:person lexinfo:firstPerson ;
+            ] .
+
+:suff_i_2sg a ontolex:Affix ;
+            rdfs:label "-i"@ita ;
+            morph:grammaticalMeaning [
+              lexinfo:number lexinfo:singular ;
+              lexinfo:person lexinfo:secondPerson ;
+            ] .
+
+:suff_a_3sg a ontolex:Affix ;
+            rdfs:label "-a"@ita ;
+            morph:grammaticalMeaning [
+              lexinfo:number lexinfo:singular ;
+              lexinfo:person lexinfo:thirdPerson ;
+            ] .
+
+:suff_iamo_1pl a ontolex:Affix ;
+            rdfs:label "-iamo"@ita ;
+            morph:grammaticalMeaning [
+              lexinfo:number lexinfo:plural ;
+              lexinfo:person lexinfo:firstPerson ;
+            ] .
+
+:suff_ate_2pl a ontolex:Affix ;
+            rdfs:label "-ate"@ita ;
+            morph:grammaticalMeaning [
+              lexinfo:number lexinfo:plural ;
+              lexinfo:person lexinfo:secondPerson ;
+            ] .
+
+:suff_ono_3pl a ontolex:Affix ;
+            rdfs:label "-ono"@ita ;
+            morph:grammaticalMeaning [
+              lexinfo:number lexinfo:plural ;
+              lexinfo:person lexinfo:thirdPerson ;
+            ] .
+
+
+:v-are_ind_1sg a morph:InflectionRule ;
+               morph:paradigm :v-are_paradigm ;
+               morph:involves :suff_o_1sg ;
+               morph:replacement [
+                 a morph:Replacement ;
+                 morph:source "are$" ;
+                 morph:target "o" ;
+               ] .
+
+:v-are_ind_2sg a morph:InflectionRule ;
+               morph:paradigm :v-are_paradigm ;
+               morph:involves :suff_i_2sg ;
+               morph:replacement [
+                 a morph:Replacement ;
+                 morph:source "are$" ;
+                 morph:target "i" ;
+               ] .
+
+:v-are_ind_3sg a morph:InflectionRule ;
+               morph:paradigm :v-are_paradigm ;
+               morph:involves :suff_a_3sg ;
+               morph:replacement [
+                 a morph:Replacement ;
+                 morph:source "are$" ;
+                 morph:target "a" ;
+               ] .
+
+:v-are_ind_1pl a morph:InflectionRule ;
+               morph:paradigm :v-are_paradigm ;
+               morph:involves :suff_iamo_1pl ;
+               morph:replacement [
+                 a morph:Replacement ;
+                 morph:source "are$" ;
+                 morph:target "iame" ;
+               ] .
+
+:v-are_ind_2pl a morph:InflectionRule ;
+               morph:paradigm :v-are_paradigm ;
+               morph:involves :suff_ate_2pl ;
+               morph:replacement [
+                 a morph:Replacement ;
+                 morph:source "are$" ;
+                 morph:target "ate" ;
+               ] .
+
+:v-are_ind_3pl a morph:InflectionRule ;
+               morph:paradigm :v-are_paradigm ;
+               morph:involves :suff_ono_3pl ;
+               morph:replacement [
+                 a morph:Replacement ;
+                 morph:source "are$" ;
+                 morph:target "ono" ;
+               ] .
+
+:parlare a ontolex:LexicalEntry ;
+         lexinfo:partOfSpeech :lexinfo:verb ;
+         morph:morphologicalPattern :v-are_paradigm;
+         ontolex:canonicalForm :parlare_form ;
+         morph:baseForm :parlare_form .
+         
+:parlare_form a ontolex:Form ;
+              ontolex:writtenRep "parlare"@ita .
+
+:accentare a ontolex:LexicalEntry ;
+           lexinfo:partOfSpeech :lexinfo:verb ;
+           morph:morphologicalPattern :v-are_paradigm;
+           ontolex:canonicalForm :accentare_form ;
+           morph:baseForm :accentare_form .
+         
+:accentare_form a ontolex:Form ;
+                ontolex:writtenRep "accentare"@ita .

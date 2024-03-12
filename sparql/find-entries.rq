@@ -1,0 +1,25 @@
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX morph: <https://www.w3.org/community/ontolex/wiki/Morphology#>
+PREFIX lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#>
+
+SELECT ?word ?baseString ?newString ?form
+WHERE
+{
+    ?word morph:morphologicalPattern ?paradigm ;
+          morph:baseForm ?baseForm ;
+          morph:baseForm/ontolex:writtenRep ?baseString .
+    
+    ?rule a morph:InflectionRule ;
+          morph:paradigm ?paradigm ;
+          morph:replacement/morph:source ?srcPattern ;
+          morph:replacement/morph:target ?dstPattern .
+
+    BIND(REPLACE(REPLACE(?srcPattern, "\\(V\\)", "(a|e|i|o|u|ie)"), "\\(C\\)", "(ċ|d|n|r|s|t|x|ż|z|b|f|ġ|g|għ|h|ħ|j|k|l|m|p|q|v|w)") AS ?srcPattern_repl)
+    BIND(REPLACE(?dstPattern, "\\\\", "\\$") AS ?dstPattern_repl)
+    BIND(CONCAT("_", REPLACE(STR(?rule), ".*/", "")) AS ?formURI)
+    BIND(URI(CONCAT(STR(?baseForm), ?formURI)) AS ?form)
+    BIND(REPLACE(?baseString, ?srcPattern_repl, ?dstPattern_repl) AS ?newString)
+    
+    # test strings for the Italian and Maltese datasets
+    FILTER(?newString="ktibt"@mlt || ?newString="parlo"@ita)
+}

@@ -1,0 +1,38 @@
+PREFIX ontolex: <http://www.w3.org/ns/lemon/ontolex#>
+PREFIX morph: <https://www.w3.org/community/ontolex/wiki/Morphology#>
+PREFIX lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#>
+
+CONSTRUCT
+{
+  ?word ontolex:otherForm ?form .
+  ?form ontolex:writtenRep ?newString ;
+      morph:grammaticalMeaning ?gramMeaning .
+  ?gramMeaning ?gramPred ?gramObj .
+}
+WHERE
+{
+    ?word morph:morphologicalPattern ?paradigm ;
+          morph:baseForm ?baseForm ;
+          morph:baseForm/ontolex:writtenRep ?baseString .
+    
+    ?rule a morph:InflectionRule ;
+          morph:paradigm ?paradigm ;
+          morph:replacement/morph:source ?srcPattern ;
+          morph:replacement/morph:target ?dstPattern .
+    
+    OPTIONAL { ?rule morph:grammaticalMeaning [ ?gramPred ?gramObj ; ] . }
+    OPTIONAL {
+      ?rule morph:involves ?morph .
+      ?morph morph:grammaticalMeaning [ ?gramPred ?gramObj ; ] .
+    }
+
+    FILTER(STR(?baseString) = "parlare" || STR(?baseString) = "kiteb")
+    
+    BIND(REPLACE(REPLACE(?srcPattern, "\\(V\\)", "(a|e|i|o|u|ie)"), "\\(C\\)", "(ċ|d|n|r|s|t|x|ż|z|b|f|ġ|g|għ|h|ħ|j|k|l|m|p|q|v|w)") AS ?srcPattern_repl)
+    BIND(REPLACE(?dstPattern, "\\\\", "\\$") AS ?dstPattern_repl)
+    BIND(CONCAT("_", REPLACE(STR(?rule), ".*/", "")) AS ?formURI)
+    BIND(URI(CONCAT(STR(?baseForm), ?formURI)) AS ?form)
+    BIND(REPLACE(?baseString, ?srcPattern_repl, ?dstPattern_repl) AS ?newString)
+    
+    BIND(URI(CONCAT(STR(?form), "_gram")) AS ?gramMeaning) 
+}

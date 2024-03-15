@@ -29,7 +29,7 @@ sparql --data=italian.ttl --query=sparql/generate-forms-for-entry.rq
 | "parlare"@ita | "parlate"@ita  | "person number" | "secondPerson plural"   | <https://apps.ionov.me/ontolex/ita/parlare> |
 | "parlare"@ita | "parla"@ita    | "person number" | "thirdPerson singular"  | <https://apps.ionov.me/ontolex/ita/parlare> |
 | "parlare"@ita | "parlono"@ita  | "person number" | "thirdPerson plural"    | <https://apps.ionov.me/ontolex/ita/parlare> |
-| "parlare"@ita | "parliame"@ita | "person number" | "firstPerson plural"    | <https://apps.ionov.me/ontolex/ita/parlare> |
+| "parlare"@ita | "parliamo"@ita | "person number" | "firstPerson plural"    | <https://apps.ionov.me/ontolex/ita/parlare> |
 | "parlare"@ita | "parli"@ita    | "person number" | "secondPerson singular" | <https://apps.ionov.me/ontolex/ita/parlare> |
 ----------------------------------------------------------------------------------------------------------------------------
 ```
@@ -51,10 +51,10 @@ sparql --data=italian.ttl --query=sparql/generate-all-forms.rq
 | "parlare"@ita   | "parlate"@ita    | "person number" | "secondPerson plural"   | <https://apps.ionov.me/ontolex/ita/parlare>   |
 | "parlare"@ita   | "parli"@ita      | "person number" | "secondPerson singular" | <https://apps.ionov.me/ontolex/ita/parlare>   |
 | "accentare"@ita | "accenti"@ita    | "person number" | "secondPerson singular" | <https://apps.ionov.me/ontolex/ita/accentare> |
-| "parlare"@ita   | "parliame"@ita   | "person number" | "firstPerson plural"    | <https://apps.ionov.me/ontolex/ita/parlare>   |
+| "parlare"@ita   | "parliamo"@ita   | "person number" | "firstPerson plural"    | <https://apps.ionov.me/ontolex/ita/parlare>   |
 | "accentare"@ita | "accentono"@ita  | "person number" | "thirdPerson plural"    | <https://apps.ionov.me/ontolex/ita/accentare> |
 | "parlare"@ita   | "parlo"@ita      | "person number" | "firstPerson singular"  | <https://apps.ionov.me/ontolex/ita/parlare>   |
-| "accentare"@ita | "accentiame"@ita | "person number" | "firstPerson plural"    | <https://apps.ionov.me/ontolex/ita/accentare> |
+| "accentare"@ita | "accentiamo"@ita | "person number" | "firstPerson plural"    | <https://apps.ionov.me/ontolex/ita/accentare> |
 ----------------------------------------------------------------------------------------------------------------------------------
 ```
 
@@ -242,7 +242,7 @@ PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         lexinfo:person  lexinfo:firstPerson .
 
 :parlare_form_v-are_ind_1pl
-        ontolex:writtenRep        "parliame"@ita;
+        ontolex:writtenRep        "parliamo"@ita;
         morph:grammaticalMeaning  :parlare_form_v-are_ind_1pl_gram .
 
 :parlare_form_v-are_ind_1sg_gram

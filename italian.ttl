@@ -83,7 +83,7 @@
                morph:replacement [
                  a morph:Replacement ;
                  morph:source "are$" ;
-                 morph:target "iame" ;
+                 morph:target "iamo" ;
                ] .
 
 :v-are_ind_2pl a morph:InflectionRule ;
